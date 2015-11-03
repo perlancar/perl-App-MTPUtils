@@ -6,7 +6,7 @@ package App::MTPUtils;
 use 5.010001;
 use strict;
 use warnings;
-use Log::Any '$log';
+use Log::Any::IfLOG '$log';
 
 our %SPEC;
 
