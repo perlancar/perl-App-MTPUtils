@@ -1,5 +1,10 @@
 Revision history for App-MTPUtils
 
+0.02    2015-11-04 (PERLANCAR)
+
+        - Add utility: mtputils-del-files.
+
+
 0.01    2015-11-03 (PERLANCAR)
 
         - First release.
