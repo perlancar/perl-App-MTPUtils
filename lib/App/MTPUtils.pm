@@ -10,6 +10,19 @@ use Log::Any::IfLOG '$log';
 
 our %SPEC;
 
+my %arg_files = (
+    files => {
+        summary => 'Filenames/IDs/wildcards',
+        'summary.alt.plurality.singular' => 'Filename/ID/wildcard',
+        'x.name.is_plural' => 1,
+        schema => ['array*', of=>'str*', min_len=>1],
+        req => 1,
+        pos => 0,
+        greedy => 1,
+        element_completion => \&_complete_filename_or_id,
+    },
+);
+
 $SPEC{':package'} = {
     v => 1.1,
     summary => 'CLI utilities related to MTP (Media Transfer Protocol)',
@@ -170,20 +183,11 @@ To use this routine, you must already run `mtp-files` and save its output in
     % mtp-files > mtp-files.out
 
 This file is used for tab completion as well as getting filename/ID when only
-one is specified. This makes using `mtp-file` less painful.
+one is specified. This makes using `mtp-getfile` less painful.
 
 _
     args => {
-        files => {
-            summary => 'Filenames/IDs/wildcards',
-            'summary.alt.plurality.singular' => 'Filename/ID/wildcard',
-            'x.name.is_plural' => 1,
-            schema => ['array*', of=>'str*', min_len=>1],
-            req => 1,
-            pos => 0,
-            greedy => 1,
-            element_completion => \&_complete_filename_or_id,
-        },
+        %arg_files,
         overwrite => {
             schema => 'bool',
             cmdline_aliases => {O=>{}},
@@ -218,6 +222,53 @@ sub get_files {
             "mtp-getfile",
             $file->{id},
             $file->{name},
+        );
+    }
+
+    [200, "OK"];
+}
+
+$SPEC{delete_files} = {
+    v => 1.1,
+    summary => 'Delete multiple files from MTP (wrapper for mtp-delfile)',
+    description => <<'_',
+
+This routine is a thin wrapper for `mtp-delfile` command from `mtp-tools`.
+
+To use this routine, you must already run `mtp-files` and save its output in
+`mtp-files.out` file, e.g.:
+
+    % mtp-files > mtp-files.out
+
+This file is used for tab completion as well as getting filename/ID when only
+one is specified. This makes using `mtp-delfile` less painful.
+
+_
+    args => {
+        %arg_files,
+    },
+    deps => {
+        prog => 'mtp-delfile',
+    },
+};
+sub delete_files {
+    require IPC::System::Options;
+
+    my %args = @_;
+
+    my $res = list_files(queries=>$args{files}, detail=>1);
+    return $res unless $res->[0] == 200;
+
+    return [412, "No matching files to delete"] unless @{$res->[2]};
+
+    my $num_files = @{ $res->[2] };
+    for my $i (1..$num_files) {
+        my $file = $res->[2][$i-1];
+        $log->infof("[%d/%d] deleting file '%s' ...",
+                    $i, $num_files, $file->{name});
+        IPC::System::Options::system(
+            {log=>1, shell=>0},
+            "mtp-delfile", "-n", $file->{id},
         );
     }
 
