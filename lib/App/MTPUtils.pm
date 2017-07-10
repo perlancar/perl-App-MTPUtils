@@ -6,7 +6,7 @@ package App::MTPUtils;
 use 5.010001;
 use strict;
 use warnings;
-use Log::Any::IfLOG '$log';
+use Log::ger;
 
 our %SPEC;
 
@@ -210,10 +210,10 @@ sub get_files {
     my $num_files = @{ $res->[2] };
     for my $i (1..$num_files) {
         my $file = $res->[2][$i-1];
-        $log->infof("[%d/%d] Getting file '%s' ...",
+        log_info("[%d/%d] Getting file '%s' ...",
                     $i, $num_files, $file->{name});
         if ((-f $file->{name}) && !$args{overwrite}) {
-            $log->warnf("Skipped file '%s' (%d) (already exists)",
+            log_warn("Skipped file '%s' (%d) (already exists)",
                         $file->{name}, $file->{id});
             next;
         }
@@ -264,7 +264,7 @@ sub delete_files {
     my $num_files = @{ $res->[2] };
     for my $i (1..$num_files) {
         my $file = $res->[2][$i-1];
-        $log->infof("[%d/%d] deleting file '%s' ...",
+        log_info("[%d/%d] deleting file '%s' ...",
                     $i, $num_files, $file->{name});
         IPC::System::Options::system(
             {log=>1, shell=>0},
