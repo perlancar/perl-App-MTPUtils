@@ -1,11 +1,11 @@
-0.04    2017-07-10 (PERLANCAR)
+0.04    2017-07-10  Released-By: PERLANCAR
 
 	- No functional changes.
 
 	- Replace Log::Any with Log::ger.
 
 
-0.03    2015-11-07 (PERLANCAR)
+0.03    2015-11-07  Released-By: PERLANCAR
 
 	- No functional changes.
 
@@ -13,11 +13,11 @@
 	  version.
 
 
-0.02    2015-11-04 (PERLANCAR)
+0.02    2015-11-04  Released-By: PERLANCAR
 
         - Add utility: mtputils-del-files.
 
 
-0.01    2015-11-03 (PERLANCAR)
+0.01    2015-11-03  Released-By: PERLANCAR
 
         - First release.
